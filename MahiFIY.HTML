@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>MAHIFIY</title>
+<style>
+  :root{--accent:#ff7a00;--accent2:#ffab4d;--accent-soft:rgba(255,122,0,.15);--bg:#0a0a0a;--panel:#151515;--panel2:#1f1f1f;--text:#f5f5f5;--muted:#9b9b9b;--line:#262626;--danger:#ff5252}
+  :root[data-theme="light"]{--bg:#fff8f1;--panel:#ffffff;--panel2:#fff0e0;--text:#151515;--muted:#6b6b6b;--line:#ecdccb;--danger:#d93838}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Tahoma,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+  button,input,select,textarea{font:inherit;color:inherit}
+  input,select,textarea{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 12px;width:100%;min-width:0;font-size:16px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  select{width:auto;max-width:100%}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer;white-space:nowrap;min-height:40px;touch-action:manipulation}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#000;font-weight:700}
+  .btn.icon{width:42px;height:42px;padding:0;border-radius:50%}
+  .btn.danger{color:var(--danger)}
+  .btn.on{color:var(--accent);border-color:var(--accent)}
+  .btn[disabled]{opacity:.4;pointer-events:none}
+  .muted{color:var(--muted);font-size:13px}
+  .verified{color:var(--accent);font-weight:900}
+  .badge{font-size:10px;background:var(--accent);color:#000;border-radius:6px;padding:2px 6px;margin-inline-start:6px;font-weight:700}
+  .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .grow{flex:1;min-width:0}
+
+  /* top bar */
+  .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .logo{font-weight:900;font-size:20px;letter-spacing:2px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-inline-end:auto}
+  .top .btn{padding:6px 12px;min-height:34px;font-size:13px}
+
+  /* content */
+  main{padding:12px 14px calc(230px + env(safe-area-inset-bottom))}
+  h2{font-size:19px;margin:18px 0 10px}
+
+  /* bottom nav */
+  .bottom{position:fixed;bottom:0;left:0;right:0;z-index:12;display:flex;justify-content:space-around;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line)}
+  .navbtn{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:6px 2px;border-radius:12px;cursor:pointer;color:var(--muted);font-size:11px;touch-action:manipulation}
+  .navbtn .ic{font-size:19px;line-height:1}
+  .navbtn.active{color:var(--accent)}
+  .navbtn.active .ic{transform:scale(1.12)}
+
+  /* cards & rows */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:12px}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .row{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px;flex-wrap:wrap}
+  .row:active{background:var(--panel2)}
+  .row.current{background:var(--accent-soft)}
+  .row.current .title{color:var(--accent)}
+  .cover{width:50px;height:50px;border-radius:10px;flex:0 0 50px;background-size:cover;background-position:center;box-shadow:0 4px 10px rgba(0,0,0,.25)}
+  .play{cursor:pointer;min-width:0}
+  .title{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rowactions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;width:100%}
+  .rowactions select{flex:1 1 140px;max-width:none}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .acard{text-align:center;cursor:pointer;margin:0;padding:14px 10px}
+  .avatar{width:96px;height:96px;border-radius:50%;margin:0 auto 10px;background-size:cover;background-position:center;border:3px solid var(--accent);box-shadow:0 6px 16px rgba(255,122,0,.25)}
+  .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+  .hero .avatar{margin:0;width:130px;height:130px}
+  .hero .btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .form{display:grid;gap:10px}
+  .msg{border-inline-start:3px solid var(--accent);background:var(--panel2);padding:12px;border-radius:12px;margin:10px 0}
+  .sec-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+  .empty{color:var(--muted);text-align:center;padding:28px 10px}
+  .auth-card{margin:24px 0}
+
+  /* mini player */
+  .player{position:fixed;left:8px;right:8px;bottom:calc(64px + env(safe-area-inset-bottom));z-index:11;background:color-mix(in srgb,var(--panel) 96%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .pTop{display:flex;align-items:center;gap:10px}
+  .pTop .cover{width:44px;height:44px;flex-basis:44px;background:var(--panel2)}
+  .pTop .info{flex:1;min-width:0}
+  .pTop .title{font-size:14px}
+  .pTop .btn.icon{width:40px;height:40px}
+  .pTop .btn.primary.icon{width:46px;height:46px;font-size:17px}
+  .pBar{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .pBar span{font-size:11px;color:var(--muted);min-width:34px;text-align:center;font-variant-numeric:tabular-nums}
+  input[type=range]{accent-color:var(--accent);padding:0;border:0;background:transparent;height:22px;cursor:pointer;width:100%}
+  .pBar input{flex:1}
+  .pExtra{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+  .pExtra .vol{display:flex;align-items:center;gap:8px;flex:1;max-width:180px}
+  .pExtra .vol input{width:100%}
+
+  .toast{position:fixed;top:calc(70px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;padding:10px 18px;border-radius:12px;font-weight:700;z-index:30;display:none;max-width:90vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:20;padding:0}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--accent);border-top-left-radius:22px;border-top-right-radius:22px;padding:22px 18px calc(22px + env(safe-area-inset-bottom));width:100%;max-width:520px;display:grid;gap:10px;max-height:88vh;overflow:auto}
+  .modal h2{margin:0 0 4px}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="logo">MAHIFIY</div>
+  <button class="btn" data-act="toggleLang" id="langBtn"></button>
+  <button class="btn" data-act="toggleTheme" id="themeBtn"></button>
+  <button class="btn" id="authBtn" hidden></button>
+</header>
+
+<main id="view"></main>
+
+<nav class="bottom" id="nav"></nav>
+
+<div class="player" id="player" hidden>
+  <div class="pTop">
+    <div class="cover" id="npCover"></div>
+    <div class="info"><div class="title" id="npTitle">—</div><div class="muted" id="npArtist"></div></div>
+    <button class="btn icon" data-act="prev" title="Previous">⏮</button>
+    <button class="btn icon primary" data-act="pp" id="pp">▶</button>
+    <button class="btn icon" data-act="next" title="Next">⏭</button>
+  </div>
+  <div class="pBar">
+    <span id="tCur">0:00</span>
+    <input type="range" id="seek" min="0" max="100" value="0" step="0.1">
+    <span id="tDur">0:00</span>
+  </div>
+  <div class="pExtra">
+    <button class="btn" data-act="shuffle" id="shBtn">🔀</button>
+    <div class="vol"><span class="muted">🔊</span><input type="range" id="vol" min="0" max="1" step="0.01" value="0.8"></div>
+    <button class="btn" data-act="repeat" id="rpBtn">🔁</button>
+  </div>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
+
+<script>
+const KEY='mahifiy_v2', PKEY='mahifiy_v2_prefs', SKEY='mahifiy_v2_session';
+const SECTIONS=['home','search','artists','playlists','support'];
+const ICONS={home:'🏠',search:'🔍',artists:'🎤',playlists:'📚',support:'💬',upload:'⬆️',admin:'🛠'};
+const T={
+fa:{home:'خانه',search:'جستجو',artists:'هنرمندان',playlists:'پلی‌لیست',support:'پشتیبانی',upload:'آپلود',admin:'مدیریت',
+ login:'ورود',logout:'خروج',register:'ثبت‌نام',username:'نام کاربری',password:'رمز عبور',name:'نام',
+ role_owner:'مالک',role_admin:'مدیر',role_artist:'هنرمند',role_user:'شنونده',
+ setup_title:'اولین راه‌اندازی',setup_note:'این حساب، حساب مالک سایت است. نام کاربری: ۳ تا ۲۰ حرف انگلیسی، عدد، نقطه یا _. رمز: حداقل ۸ کاراکتر.',setup_btn:'ساخت حساب مالک',
+ suggested:'پیشنهادی',allTracks:'همه‌ی آهنگ‌ها',tracksAdmin:'همه‌ی آهنگ‌ها',pending:'در انتظار تأیید',noTracks:'آهنگی پیدا نشد',noArtists:'هنرمندی وجود ندارد',
+ artistsAdmin:'هنرمندان',addArtist:'افزودن هنرمند',searchHint:'نام آهنگ یا هنرمند را تایپ کنید',emptyList:'این فهرست خالی است',notAvailable:'این بخش در دسترس نیست',
+ sections:'نمایش بخش‌ها',users:'کاربران',inbox:'صندوق پیام پشتیبانی',reply:'پاسخ',closed:'بسته شده',open:'باز',shown:'نمایان',hidden:'مخفی',
+ addSuggested:'افزودن پلی‌لیست پیشنهادی',suggestedName:'نام پلی‌لیست پیشنهادی',add:'افزودن',addToPl:'افزودن به پلی‌لیست',newPlaylist:'ساخت پلی‌لیست',plName:'نام پلی‌لیست',
+ title:'عنوان آهنگ',artistName:'نام هنرمند',mp3:'لینک مستقیم فایل mp3',cover:'لینک عکس کاور (اختیاری)',avatar:'لینک عکس هنرمند',bio:'بیوگرافی',
+ uploadNote:'آهنگ شما پس از تأیید مالک یا مدیر منتشر می‌شود.',uploadPending:'آهنگ شما ثبت شد و پس از تأیید منتشر می‌شود.',
+ save:'ذخیره',cancel:'انصراف',approve:'تأیید',reject:'رد',del:'حذف',edit:'ویرایش',rename:'تغییر نام',resetPass:'تغییر رمز',newPass:'رمز جدید (حداقل ۸ کاراکتر)',sure:'مطمئنید؟',
+ verify:'تیک تأیید',unverify:'حذف تیک',verifiedArtist:'هنرمند تأییدشده',songs:'آهنگ',playAll:'پخش همه',back:'بازگشت',
+ supportLogin:'برای ارسال پیام پشتیبانی وارد شوید',supportPh:'پیام خود را بنویسید...',sendMsg:'ارسال',noMsgs:'پیامی وجود ندارد',needLogin:'ابتدا وارد شوید',
+ saved:'ذخیره شد',minPass:'رمز حداقل ۸ کاراکتر باشد',needFields:'فیلدهای ضروری را پر کنید',badUrl:'لینک باید با http یا https شروع شود',
+ noAudio:'برای این آهنگ لینک mp3 ثبت نشده است',playErr:'پخش این آهنگ ممکن نیست. لینک را بررسی کنید',notApproved:'این آهنگ هنوز تأیید نشده است',
+ ownerLocked:'حساب مالک قابل حذف نیست',badUsername:'نام کاربری نامعتبر است',needName:'نام را وارد کنید',badLogin:'نام کاربری یا رمز اشتباه است',takenUser:'این نام کاربری قبلاً ثبت شده است',
+ shuffleOn:'شافل روشن',shuffleOff:'شافل خاموش',repeatOff:'تکرار خاموش',repeatAll:'تکرار همه',repeatOne:'تکرار یک آهنگ',
+ emptyPl:'پلی‌لیست خالی است',delPl:'حذف پلی‌لیست'},
+en:{home:'Home',search:'Search',artists:'Artists',playlists:'Playlists',support:'Support',upload:'Upload',admin:'Admin',
+ login:'Login',logout:'Logout',register:'Sign up',username:'Username',password:'Password',name:'Name',
+ role_owner:'Owner',role_admin:'Admin',role_artist:'Artist',role_user:'Listener',
+ setup_title:'First setup',setup_note:'This is the site owner account. Username: 3–20 letters, digits, dots or underscores. Password: at least 8 characters.',setup_btn:'Create owner account',
+ suggested:'Suggested',allTracks:'All tracks',tracksAdmin:'All tracks',pending:'Pending approval',noTracks:'No tracks found',noArtists:'No artists yet',
+ artistsAdmin:'Artists',addArtist:'Add artist',searchHint:'Type a track or artist name',emptyList:'This list is empty',notAvailable:'This section is not available',
+ sections:'Section visibility',users:'Users',inbox:'Support inbox',reply:'Reply',closed:'Closed',open:'Open',shown:'Visible',hidden:'Hidden',
+ addSuggested:'Add suggested playlist',suggestedName:'Suggested playlist name',add:'Add',addToPl:'Add to playlist',newPlaylist:'Create playlist',plName:'Playlist name',
+ title:'Track title',artistName:'Artist name',mp3:'Direct mp3 link',cover:'Cover image link (optional)',avatar:'Artist photo link',bio:'Biography',
+ uploadNote:'Your track goes live after the owner or an admin approves it.',uploadPending:'Your track was submitted and goes live after approval.',
+ save:'Save',cancel:'Cancel',approve:'Approve',reject:'Reject',del:'Delete',edit:'Edit',rename:'Rename',resetPass:'Change password',newPass:'New password (at least 8 characters)',sure:'Are you sure?',
+ verify:'Verify badge',unverify:'Remove badge',verifiedArtist:'Verified artist',songs:'tracks',playAll:'Play all',back:'Back',
+ supportLogin:'Log in to send a support message',supportPh:'Write your message...',sendMsg:'Send',noMsgs:'No messages',needLogin:'Please log in first',
+ saved:'Saved',minPass:'Password must be at least 8 characters',needFields:'Fill in the required fields',badUrl:'Link must start with http or https',
+ noAudio:'No mp3 link is set for this track',playErr:'This track could not be played. Check the link',notApproved:'This track is not approved yet',
+ ownerLocked:'The owner account cannot be deleted',badUsername:'Invalid username',needName:'Enter a name',badLogin:'Wrong username or password',takenUser:'This username is taken',
+ shuffleOn:'Shuffle on',shuffleOff:'Shuffle off',repeatOff:'Repeat off',repeatAll:'Repeat all',repeatOne:'Repeat one',
+ emptyPl:'Playlist is empty',delPl:'Delete playlist'}
+};
+let prefs={lang:'fa',theme:'dark'};
+try{ Object.assign(prefs,JSON.parse(localStorage.getItem(PKEY))||{}); }catch(e){}
+if(!['fa','en'].includes(prefs.lang)) prefs.lang='fa';
+const t=k=>(T[prefs.lang][k]??T.fa[k]??k);
+
+function load(){
+  const base={users:[],tracks:[],artists:{},hidden:{},suggested:[],tickets:[]};
+  try{ const d=JSON.parse(localStorage.getItem(KEY)); return d&&typeof d==='object'?{...base,...d}:base; }
+  catch(e){ return base; }
+}
+let db=load();
+let session=localStorage.getItem(SKEY);
+let view='home', viewArtist=null, q='', ctx=[], queue=[], qi=-1, shuffle=false, repeatMode=0;
+
+const $=s=>document.querySelector(s);
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hue=s=>[...String(s)].reduce((a,c)=>a+c.charCodeAt(0),0)%360;
+const grad=s=>`linear-gradient(135deg,hsl(${hue(s)},75%,50%),#111)`;
+const safeUrl=u=>{ u=String(u||'').trim(); return /^https?:\/\/\S+$/i.test(u)?u:''; };
+function coverStyle(src,seed){
+  const u=safeUrl(src);
+  if(!u) return `background:${grad(seed||'')}`;
+  return `background-image:url("${u.replace(/"/g,'%22')}")`;
+}
+const fmt=n=>{ if(!isFinite(n)) return '0:00'; const m=Math.floor(n/60), s=Math.floor(n%60); return m+':'+String(s).padStart(2,'0'); };
+const val=id=>(document.getElementById(id)?.value??'').trim();
+const rawVal=id=>document.getElementById(id)?.value??'';
+function persist(){ localStorage.setItem(KEY,JSON.stringify(db)); localStorage.setItem(PKEY,JSON.stringify(prefs)); }
+function toast(msg){ const el=$('#toast'); el.textContent=msg; el.style.display='block'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.display='none',2200); }
+function openModal(html){ $('#modalBody').innerHTML=`<div data-scope>${html}</div>`; $('#modal').classList.add('open'); }
+function closeModal(){ $('#modal').classList.remove('open'); }
+
+async function hashPass(pw,salt){
+  const enc=new TextEncoder();
+  const key=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);
+  const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(salt),iterations:200000,hash:'SHA-256'},key,256);
+  return [...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function makeUser(name,username,pw,role){
+  const salt=uid()+uid();
+  return {id:uid(),name,username,role,salt,hash:await hashPass(pw,salt),playlists:[]};
+}
+const me=()=>db.users.find(u=>u.id===session)||null;
+const role=()=>me()?.role||'';
+const isOwner=()=>role()==='owner';
+const canManage=()=>['owner','admin'].includes(role());
+const canUpload=()=>['owner','admin','artist'].includes(role());
+const visible=s=>isOwner()||!db.hidden[s];
+const approved=()=>db.tracks.filter(x=>x.status==='approved');
+const byId=id=>db.tracks.find(x=>x.id===id);
+const artistInfo=n=>has(db.artists,n)?db.artists[n]:{};
+const ensureArtist=n=>{ if(!has(db.artists,n)) db.artists[n]={bio:'',avatar:'',verified:false}; return db.artists[n]; };
+const artistNames=()=>[...new Set([...Object.keys(db.artists),...approved().map(x=>x.artist)])].sort((a,b)=>a.localeCompare(b));
+
+function checkNew(name,username,pw){
+  if(!name) return t('needName');
+  if(!/^[a-z0-9_.]{3,20}$/.test(username)) return t('badUsername');
+  if(pw.length<8) return t('minPass');
+  if(db.users.some(x=>x.username===username)) return t('takenUser');
+  return '';
+}
+
+async function doSetup(){
+  if(db.users.some(u=>u.role==='owner')) return;
+  const name=val('sn'), user=val('su').toLowerCase(), pw=rawVal('sp');
+  const err=checkNew(name,user,pw); if(err) return toast(err);
+  const acc=await makeUser(name,user,pw,'owner');
+  db.users.push(acc); session=acc.id; localStorage.setItem(SKEY,session);
+  persist(); toast(t('saved')); view='home'; render();
+}
+function loginModal(){
+  openModal(`<h2>${t('login')}</h2>
+    <input id="lu" placeholder="${t('username')}" dir="ltr" autocomplete="username">
+    <input id="lp" type="password" placeholder="${t('password')}" dir="ltr" autocomplete="current-password">
+    <button class="btn primary" data-act="login" data-primary>${t('login')}</button>
+    <button class="btn" data-act="registerModal">${t('register')}</button>`);
+}
+async function doLogin(){
+  const user=val('lu').toLowerCase(), pw=rawVal('lp');
+  const acc=db.users.find(x=>x.username===user);
+  if(!acc||(await hashPass(pw,acc.salt))!==acc.hash) return toast(t('badLogin'));
+  session=acc.id; localStorage.setItem(SKEY,session); closeModal(); view='home'; render();
+}
+function registerModal(){
+  openModal(`<h2>${t('register')}</h2>
+    <input id="rn" placeholder="${t('name')}">
+    <input id="ru" placeholder="${t('username')}" dir="ltr" autocomplete="username">
+    <input id="rp" type="password" placeholder="${t('password')}" dir="ltr" autocomplete="new-password">
+    <select id="rr"><option value="user">${t('role_user')}</option><option value="artist">${t('role_artist')}</option></select>
+    <button class="btn primary" data-act="register" data-primary>${t('register')}</button>`);
+}
+async function doRegister(){
+  const name=val('rn'), user=val('ru').toLowerCase(), pw=rawVal('rp'), r=val('rr')==='artist'?'artist':'user';
+  const err=checkNew(name,user,pw); if(err) return toast(err);
+  const acc=await makeUser(name,user,pw,r);
+  db.users.push(acc); session=acc.id; localStorage.setItem(SKEY,session);
+  persist(); closeModal(); view='home'; render();
+}
+function logout(){ session=null; localStorage.removeItem(SKEY); view='home'; closeModal(); render(); }
+
+const audio=new Audio();
+audio.volume=0.8;
+function markCurrent(){
+  const cur=queue[qi];
+  document.querySelectorAll('[data-row]').forEach(r=>r.classList.toggle('current',!!audio.src&&r.dataset.row===cur));
+}
+function loadCurrent(autoplay){
+  const tr=byId(queue[qi]); if(!tr) return;
+  const src=safeUrl(tr.url);
+  if(!src){ toast(t('noAudio')); return; }
+  audio.src=src;
+  $('#player').hidden=false;
+  $('#npTitle').textContent=tr.title;
+  $('#npArtist').textContent=tr.artist;
+  $('#npCover').style.cssText=coverStyle(tr.cover||artistInfo(tr.artist).avatar,tr.title);
+  $('#seek').value=0; $('#tCur').textContent='0:00'; $('#tDur').textContent='0:00';
+  if(autoplay) audio.play().catch(()=>toast(t('playErr')));
+  markCurrent();
+  if('mediaSession' in navigator){
+    navigator.mediaSession.metadata=new MediaMetadata({title:tr.title,artist:tr.artist});
+    navigator.mediaSession.setActionHandler('nexttrack',next);
+    navigator.mediaSession.setActionHandler('previoustrack',prev);
+    navigator.mediaSession.setActionHandler('play',()=>audio.play());
+    navigator.mediaSession.setActionHandler('pause',()=>audio.pause());
+  }
+}
+function playList(ids){
+  if(!ids.length) return toast(t('emptyList'));
+  queue=ids; qi=0; loadCurrent(true);
+}
+function playFromId(id){
+  const tr=byId(id); if(!tr) return;
+  if(tr.status!=='approved') return toast(t('notApproved'));
+  const list=ctx.includes(id)?ctx:[id];
+  queue=list; qi=list.indexOf(id); loadCurrent(true);
+}
+function togglePlay(){
+  if(!audio.src){ if(queue.length) loadCurrent(true); else toast(t('emptyList')); return; }
+  if(audio.paused) audio.play().catch(()=>toast(t('playErr'))); else audio.pause();
+}
+function next(){
+  if(!queue.length) return;
+  if(repeatMode===2){ audio.currentTime=0; audio.play(); return; }
+  if(shuffle&&queue.length>1){ let n; do{ n=Math.floor(Math.random()*queue.length); }while(n===qi); qi=n; }
+  else if(qi+1<queue.length) qi++;
+  else if(repeatMode===1) qi=0;
+  else { audio.pause(); audio.currentTime=0; return; }
+  loadCurrent(true);
+}
+function prev(){
+  if(audio.currentTime>3){ audio.currentTime=0; return; }
+  if(!queue.length) return;
+  qi=(qi-1+queue.length)%queue.length; loadCurrent(true);
+}
+function toggleShuffle(){ shuffle=!shuffle; $('#shBtn').classList.toggle('on',shuffle); toast(shuffle?t('shuffleOn'):t('shuffleOff')); }
+function toggleRepeat(){
+  repeatMode=(repeatMode+1)%3;
+  $('#rpBtn').classList.toggle('on',repeatMode>0);
+  $('#rpBtn').textContent=repeatMode===2?'🔂':'🔁';
+  toast([t('repeatOff'),t('repeatAll'),t('repeatOne')][repeatMode]);
+}
+audio.onplay=()=>{ $('#pp').textContent='⏸'; };
+audio.onpause=()=>{ $('#pp').textContent='▶'; };
+audio.onended=next;
+audio.onerror=()=>{ if(audio.src) toast(t('playErr')); };
+audio.onloadedmetadata=()=>{ $('#tDur').textContent=fmt(audio.duration); };
+audio.ontimeupdate=()=>{
+  if(!audio.duration) return;
+  $('#seek').value=audio.currentTime/audio.duration*100;
+  $('#tCur').textContent=fmt(audio.currentTime);
+};
+
+function trackRow(tr,opts={}){
+  const a=artistInfo(tr.artist);
+  const pl=me()?.playlists||[];
+  const plSel=!opts.noPl&&pl.length&&tr.status==='approved'
+    ? `<select data-act="addToPl" data-id="${tr.id}"><option value="">${t('addToPl')}</option>${pl.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select>`:'';
+  const adm=canManage()?`${tr.status==='pending'?`<button class="btn" data-act="approve" data-id="${tr.id}">${t('approve')}</button><button class="btn danger" data-act="reject" data-id="${tr.id}">${t('reject')}</button>`:''}<button class="btn" data-act="editTrack" data-id="${tr.id}">${t('edit')}</button><button class="btn danger" data-act="delTrack" data-id="${tr.id}">${t('del')}</button>`:'';
+  const extras=`${plSel}${opts.extra||''}${adm}`;
+  return `<div class="row" data-row="${tr.id}">
+    <div class="cover" style="${coverStyle(tr.cover||a.avatar,tr.title)}"></div>
+    <div class="grow play" data-act="play" data-id="${tr.id}">
+      <div class="title">${esc(tr.title)}${tr.status==='pending'?` <span class="badge">${t('pending')}</span>`:''}</div>
+      <div class="muted">${esc(tr.artist)}${a.verified?' <span class="verified">✔</span>':''}</div>
+    </div>
+    ${extras?`<div class="rowactions">${extras}</div>`:''}
+  </div>`;
+}
+const listOrEmpty=(list,opts)=>list.length?list.map(tr=>trackRow(tr,opts)).join(''):`<div class="empty">${t('noTracks')}</div>`;
+function artistCard(n){
+  const a=artistInfo(n), c=approved().filter(x=>x.artist===n).length;
+  return `<div class="card acard" data-act="openArtist" data-name="${esc(n)}">
+    <div class="avatar" style="${coverStyle(a.avatar,n)}"></div>
+    <div><b>${esc(n)}</b>${a.verified?` <span class="verified">✔</span>`:''}</div>
+    <div class="muted">${c} ${t('songs')}</div></div>`;
+}
+
+function viewHome(){
+  let h='';
+  if(isOwner()) h+=`<div class="ctrls"><button class="btn primary" data-act="addSuggested">+ ${t('addSuggested')}</button></div>`;
+  if(db.suggested.length){
+    h+=`<h2>${t('suggested')}</h2>`+db.suggested.map(pl=>{
+      const trs=pl.tracks.map(byId).filter(x=>x&&x.status==='approved');
+      return `<div class="card">
+        <div class="card-head"><b>${esc(pl.name)}</b>${isOwner()?`<button class="btn danger" data-act="delSuggested" data-id="${pl.id}">${t('del')}</button>`:''}</div>
+        ${trs.map(tr=>trackRow(tr,{noPl:true})).join('')||`<div class="muted">${t('emptyList')}</div>`}
+        ${isOwner()?`<select data-act="suggestAdd" data-id="${pl.id}" style="margin-top:8px;width:100%"><option value="">+ ${t('add')}</option>${approved().filter(x=>!pl.tracks.includes(x.id)).map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select>`:''}
+      </div>`;
+    }).join('');
+  }
+  h+=`<h2>${t('allTracks')}</h2>`+listOrEmpty(approved());
+  return h;
+}
+function viewSearch(){
+  return `<input id="q" placeholder="${t('searchPh')}" value="${esc(q)}" autocomplete="off" style="padding:13px 18px;border-radius:999px">
+    <div id="results" style="margin-top:12px"></div>`;
+}
+function renderResults(){
+  const box=$('#results'); if(!box) return;
+  const s=q.trim().toLowerCase();
+  if(!s){ ctx=[]; box.innerHTML=`<div class="empty">${t('searchHint')}</div>`; return; }
+  const tracks=approved().filter(x=>(x.title+' '+x.artist).toLowerCase().includes(s));
+  const arts=artistNames().filter(n=>n.toLowerCase().includes(s));
+  ctx=tracks.map(x=>x.id);
+  box.innerHTML=(arts.length?`<h2>${t('artists')}</h2><div class="grid">${arts.map(artistCard).join('')}</div>`:'')
+    +`<h2>${t('allTracks')}</h2>`+(tracks.length?tracks.map(tr=>trackRow(tr)).join(''):`<div class="empty">${t('noTracks')}</div>`);
+  markCurrent();
+}
+function viewArtists(){
+  const names=artistNames();
+  return `<h2>${t('artists')}</h2><div class="grid">${names.map(artistCard).join('')||`<div class="empty">${t('noArtists')}</div>`}</div>`;
+}
+function viewArtistPage(name){
+  const a=artistInfo(name), tracks=approved().filter(x=>x.artist===name);
+  ctx=tracks.map(x=>x.id);
+  return `<div class="ctrls"><button class="btn" data-act="go" data-view="artists">← ${t('back')}</button></div>
+  <div class="card" style="margin-top:12px"><div class="hero">
+    <div class="avatar" style="${coverStyle(a.avatar,name)}"></div>
+    <div>
+      <h2 style="margin:0">${esc(name)}${a.verified?` <span class="verified">✔</span>`:''}</h2>
+      <div class="muted" style="margin:8px 0">${esc(a.bio||'')}</div>
+      <div class="muted">${tracks.length} ${t('songs')}</div>
+    </div>
+    <div class="btns">
+      <button class="btn primary" data-act="playAll" data-name="${esc(name)}" ${tracks.length?'':'disabled'}>▶ ${t('playAll')}</button>
+      ${canManage()?`<button class="btn" data-act="editArtist" data-name="${esc(name)}">${t('edit')}</button>`:''}
+      ${isOwner()?`<button class="btn" data-act="toggleVerify" data-name="${esc(name)}">${a.verified?t('unverify'):t('verify')}</button>`:''}
+    </div>
+  </div></div>
+  ${listOrEmpty(tracks)}`;
+}
+function viewPlaylists(){
+  const pls=me().playlists;
+  let h=`<h2>${t('playlists')}</h2>
+    <div class="form" style="margin-bottom:12px"><input id="npn" placeholder="${t('plName')}"><button class="btn primary" data-act="newPlaylist">${t('newPlaylist')}</button></div>`;
+  if(!pls.length) return h+`<div class="empty">${t('emptyList')}</div>`;
+  ctx=[];
+  h+=pls.map(pl=>{
+    const trs=pl.tracks.map(byId).filter(Boolean);
+    ctx.push(...trs.filter(x=>x.status==='approved').map(x=>x.id));
+    return `<div class="card">
+      <div class="card-head"><b>${esc(pl.name)}</b>
+        <div class="ctrls"><button class="btn" data-act="playPl" data-id="${pl.id}">▶</button><button class="btn danger" data-act="delPlaylist" data-id="${pl.id}">${t('del')}</button></div>
+      </div>
+      ${trs.map(tr=>trackRow(tr,{noPl:true,extra:`<button class="btn danger" data-act="removeFromPl" data-pl="${pl.id}" data-id="${tr.id}">✕</button>`})).join('')||`<div class="muted">${t('emptyPl')}</div>`}
+    </div>`;
+  }).join('');
+  return h;
+}
+function viewSupport(){
+  let h=`<h2>${t('support')}</h2>`;
+  if(!me()) return h+`<div class="empty">${t('supportLogin')}</div>`;
+  h+=`<div class="card form"><textarea id="supText" rows="4" placeholder="${t('supportPh')}"></textarea>
+    <div><button class="btn primary" data-act="sendTicket">${t('sendMsg')}</button></div></div>`;
+  const mine=db.tickets.filter(x=>x.userId===me().id).sort((a,b)=>b.at-a.at);
+  return h+(mine.map(tk=>`<div class="msg">${esc(tk.text)}
+    ${tk.reply?`<div class="muted" style="margin-top:6px">↩ ${esc(tk.reply)}</div>`:''}
+    <div class="muted">${tk.status==='resolved'?t('closed'):t('open')}</div></div>`).join('')||`<div class="empty">${t('noMsgs')}</div>`);
+}
+function viewUpload(){
+  const locked=role()==='artist';
+  return `<h2>${t('upload')}</h2><div class="card form">
+    <div class="muted">${locked?t('uploadPending'):t('uploadNote')}</div>
+    <input id="ut" placeholder="${t('title')}">
+    <input id="ua" list="artistList" placeholder="${t('artistName')}" value="${locked?esc(me().name):''}" ${locked?'disabled':''}>
+    <datalist id="artistList">${artistNames().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+    <input id="uu" placeholder="${t('mp3')}" dir="ltr">
+    <input id="uc" placeholder="${t('cover')}" dir="ltr">
+    <div><button class="btn primary" data-act="submitUpload">${t('save')}</button></div>
+  </div>`;
+}
+function viewAdmin(){
+  const pend=db.tracks.filter(x=>x.status==='pending');
+  let h=`<h2>${t('admin')}</h2>
+    <div class="ctrls" style="margin-bottom:12px"><button class="btn primary" data-act="go" data-view="upload">+ ${t('upload')}</button></div>`;
+  h+=`<div class="card"><b>${t('pending')}</b>${pend.map(tr=>trackRow(tr,{noPl:true})).join('')||`<div class="empty">—</div>`}</div>`;
+  h+=`<div class="card"><b>${t('tracksAdmin')}</b>${db.tracks.map(tr=>trackRow(tr,{noPl:true})).join('')||`<div class="empty">${t('noTracks')}</div>`}</div>`;
+  h+=`<div class="card"><b>${t('artistsAdmin')}</b>
+    <div class="form" style="margin:10px 0"><input id="na" placeholder="${t('artistName')}"><button class="btn" data-act="addArtist">${t('addArtist')}</button></div>
+    ${artistNames().map(n=>{const a=artistInfo(n);return `<div class="row"><span class="grow">${esc(n)}${a.verified?' <span class="verified">✔</span>':''}</span>
+      <div class="rowactions" style="width:auto"><button class="btn" data-act="editArtist" data-name="${esc(n)}">${t('edit')}</button>
+      ${isOwner()?`<button class="btn" data-act="toggleVerify" data-name="${esc(n)}">${a.verified?t('unverify'):t('verify')}</button>`:''}</div></div>`;}).join('')||`<div class="empty">${t('noArtists')}</div>`}
+  </div>`;
+  const tickets=[...db.tickets].sort((a,b)=>b.at-a.at);
+  h+=`<div class="card"><b>${t('inbox')}</b>${tickets.map(tk=>`<div class="msg">
+      <b>${esc(tk.userName)}</b> <span class="muted">${tk.status==='resolved'?t('closed'):t('open')}</span>
+      <div style="margin:6px 0">${esc(tk.text)}</div>
+      ${tk.reply?`<div class="muted">↩ ${esc(tk.reply)}</div>`
+        :`<div class="form"><input id="rep-${tk.id}" placeholder="${t('reply')}"><button class="btn primary" data-act="reply" data-id="${tk.id}">${t('reply')}</button></div>`}
+    </div>`).join('')||`<div class="empty">${t('noMsgs')}</div>`}</div>`;
+  if(isOwner()){
+    h+=`<div class="card"><b>${t('sections')}</b>${SECTIONS.map(s=>`<div class="sec-row"><span>${t(s)}</span>
+      <button class="btn ${db.hidden[s]?'':'on'}" data-act="toggleSection" data-name="${s}">${db.hidden[s]?t('hidden'):t('shown')}</button></div>`).join('')}</div>`;
+    h+=`<div class="card"><b>${t('users')}</b>${db.users.map(u=>`<div class="row" style="flex-direction:column;align-items:stretch">
+      <div><b>${esc(u.name)}</b> <span class="muted">@${esc(u.username)}</span></div>
+      <div class="rowactions">
+      <select data-act="changeRole" data-id="${u.id}" ${u.role==='owner'?'disabled':''}>
+        ${u.role==='owner'?`<option>${t('role_owner')}</option>`:['admin','artist','user'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${t('role_'+r)}</option>`).join('')}
+      </select>
+      <button class="btn" data-act="renameUser" data-id="${u.id}">${t('rename')}</button>
+      <button class="btn" data-act="resetPass" data-id="${u.id}">${t('resetPass')}</button>
+      ${u.role==='owner'?'':`<button class="btn danger" data-act="delUser" data-id="${u.id}">${t('del')}</button>`}
+      </div>
+    </div>`).join('')}</div>`;
+  }
+  return h;
+}
+function setupView(){
+  return `<div class="card auth-card" data-scope>
+    <h2>${t('setup_title')}</h2>
+    <div class="muted" style="margin-bottom:14px">${t('setup_note')}</div>
+    <div class="form">
+      <input id="sn" placeholder="${t('name')}">
+      <input id="su" placeholder="${t('username')}" dir="ltr" autocomplete="off">
+      <input id="sp" type="password" placeholder="${t('password')}" dir="ltr" autocomplete="new-password">
+      <button class="btn primary" data-act="setup" data-primary>${t('setup_btn')}</button>
+    </div></div>`;
+}
+
+function applyPrefs(){
+  const r=document.documentElement;
+  r.lang=prefs.lang; r.dir=prefs.lang==='fa'?'rtl':'ltr'; r.dataset.theme=prefs.theme;
+  $('#langBtn').textContent=prefs.lang==='fa'?'EN':'فا';
+  $('#themeBtn').textContent=prefs.theme==='dark'?'☀':'🌙';
+}
+function render(){
+  applyPrefs();
+  const nav=$('#nav'), auth=$('#authBtn');
+  if(!db.users.some(u=>u.role==='owner')){
+    nav.innerHTML=''; auth.hidden=true; $('#player').hidden=true;
+    $('#view').innerHTML=setupView();
+    return;
+  }
+  const u=me();
+  auth.hidden=false;
+  auth.textContent=u?`${u.name} · ${t('logout')}`:t('login');
+  auth.dataset.act=u?'logout':'loginModal';
+
+  const tabs=[];
+  for(const k of ['home','search','artists','playlists','support','upload','admin']){
+    if(k==='playlists'&&!u) continue;
+    if(k==='upload'&&!canUpload()) continue;
+    if(k==='admin'&&!canManage()) continue;
+    if(SECTIONS.includes(k)&&!visible(k)) continue;
+    tabs.push(k);
+  }
+  if(view!=='artist'&&!tabs.includes(view)) view=tabs[0]||'none';
+  const activeTab=view==='artist'?'artists':view;
+  nav.innerHTML=tabs.map(k=>`<button class="navbtn ${activeTab===k?'active':''}" data-act="go" data-view="${k}"><span class="ic">${ICONS[k]}</span><span>${t(k)}</span></button>`).join('');
+
+  ctx=approved().map(x=>x.id);
+  const builders={home:viewHome,search:viewSearch,artists:viewArtists,playlists:viewPlaylists,support:viewSupport,upload:viewUpload,admin:viewAdmin};
+  $('#view').innerHTML=view==='artist'?viewArtistPage(viewArtist):(builders[view]||(()=>`<div class="empty">${t('notAvailable')}</div>`))();
+  if(view==='search') renderResults();
+  markCurrent();
+}
+
+function setStatus(id,s){ const tr=byId(id); if(!tr||!canManage()) return; tr.status=s; persist(); render(); }
+function delTrack(id){
+  if(!canManage()||!confirm(t('sure'))) return;
+  db.tracks=db.tracks.filter(x=>x.id!==id);
+  db.users.forEach(u=>u.playlists.forEach(p=>p.tracks=p.tracks.filter(x=>x!==id)));
+  db.suggested.forEach(p=>p.tracks=p.tracks.filter(x=>x!==id));
+  persist(); render();
+}
+function editTrackModal(id){
+  const tr=byId(id); if(!tr||!canManage()) return;
+  openModal(`<h2>${t('edit')}</h2>
+    <input id="et" value="${esc(tr.title)}" placeholder="${t('title')}">
+    <input id="ea" value="${esc(tr.artist)}" placeholder="${t('artistName')}">
+    <input id="eu" value="${esc(tr.url)}" placeholder="${t('mp3')}" dir="ltr">
+    <input id="ec" value="${esc(tr.cover||'')}" placeholder="${t('cover')}" dir="ltr">
+    <button class="btn primary" data-act="saveTrack" data-id="${id}" data-primary>${t('save')}</button>
+    <button class="btn" data-act="closeModal">${t('cancel')}</button>`);
+}
+function doSaveTrack(id){
+  const tr=byId(id); if(!tr||!canManage()) return;
+  const title=val('et'), artist=val('ea'), url=val('eu'), cover=val('ec');
+  if(!title||!artist) return toast(t('needFields'));
+  if((url&&!safeUrl(url))||(cover&&!safeUrl(cover))) return toast(t('badUrl'));
+  Object.assign(tr,{title,artist,url:safeUrl(url),cover:safeUrl(cover)});
+  persist(); closeModal(); render();
+}
+function editArtistModal(name){
+  if(!canManage()) return;
+  const a=artistInfo(name);
+  openModal(`<h2>${esc(name)}</h2>
+    <input id="ab" value="${esc(a.bio||'')}" placeholder="${t('bio')}">
+    <input id="aa" value="${esc(a.avatar||'')}" placeholder="${t('avatar')}" dir="ltr">
+    <button class="btn primary" data-act="saveArtist" data-name="${esc(name)}" data-primary>${t('save')}</button>
+    <button class="btn" data-act="closeModal">${t('cancel')}</button>`);
+}
+function doSaveArtist(name){
+  if(!canManage()) return;
+  const avatar=val('aa');
+  if(avatar&&!safeUrl(avatar)) return toast(t('badUrl'));
+  const a=ensureArtist(name);
+  a.bio=val('ab').slice(0,400); a.avatar=safeUrl(avatar);
+  persist(); closeModal(); render();
+}
+function addArtist(){
+  if(!canManage()) return;
+  const name=val('na'); if(!name) return;
+  ensureArtist(name); persist(); render();
+}
+function toggleVerify(name){
+  if(!isOwner()) return;
+  const a=ensureArtist(name); a.verified=!a.verified;
+  persist(); render();
+}
+function submitUpload(){
+  if(!canUpload()) return;
+  const title=val('ut'), artist=role()==='artist'?me().name:val('ua');
+  const url=val('uu'), cover=val('uc');
+  if(!title||!artist||!url) return toast(t('needFields'));
+  if(!safeUrl(url)||(cover&&!safeUrl(cover))) return toast(t('badUrl'));
+  db.tracks.push({id:uid(),title,artist,url:safeUrl(url),cover:safeUrl(cover),
+    status:role()==='artist'?'pending':'approved',by:me().id});
+  persist();
+  toast(role()==='artist'?t('uploadPending'):t('saved'));
+  view=role()==='artist'?'home':'admin'; render();
+}
+function newPlaylist(){
+  if(!me()) return toast(t('needLogin'));
+  const name=val('npn'); if(!name) return;
+  me().playlists.push({id:uid(),name:name.slice(0,60),tracks:[]});
+  persist(); render();
+}
+function delPlaylist(id){
+  if(!me()||!confirm(t('sure'))) return;
+  me().playlists=me().playlists.filter(p=>p.id!==id);
+  persist(); render();
+}
+function removeFromPl(el){
+  const pl=me()?.playlists.find(p=>p.id===el.dataset.pl); if(!pl) return;
+  pl.tracks=pl.tracks.filter(x=>x!==el.dataset.id);
+  persist(); render();
+}
+function addToPl(el){
+  if(!me()||!el.value) return;
+  const pl=me().playlists.find(p=>p.id===el.value);
+  if(pl&&!pl.tracks.includes(el.dataset.id)) pl.tracks.push(el.dataset.id);
+  el.value=''; persist(); toast(t('saved'));
+}
+function addSuggested(){
+  if(!isOwner()) return;
+  const name=prompt(t('suggestedName'))?.trim(); if(!name) return;
+  db.suggested.push({id:uid(),name:name.slice(0,60),tracks:[]});
+  persist(); render();
+}
+function delSuggested(id){
+  if(!isOwner()||!confirm(t('sure'))) return;
+  db.suggested=db.suggested.filter(p=>p.id!==id);
+  persist(); render();
+}
+function suggestAdd(el){
+  if(!isOwner()||!el.value) return;
+  const pl=db.suggested.find(p=>p.id===el.dataset.id);
+  if(pl&&!pl.tracks.includes(el.value)) pl.tracks.push(el.value);
+  persist(); render();
+}
+function sendTicket(){
+  if(!me()) return toast(t('needLogin'));
+  const text=val('supText'); if(!text) return;
+  db.tickets.push({id:uid(),userId:me().id,userName:me().name,text:text.slice(0,1000),reply:'',status:'open',at:Date.now()});
+  persist(); toast(t('saved')); render();
+}
+function replyTicket(id){
+  if(!canManage()) return;
+  const tk=db.tickets.find(x=>x.id===id); if(!tk) return;
+  const r=val('rep-'+id); if(!r) return;
+  tk.reply=r.slice(0,1000); tk.status='resolved';
+  persist(); toast(t('saved')); render();
+}
+function changeRole(el){
+  if(!isOwner()) return;
+  const u=db.users.find(x=>x.id===el.dataset.id);
+  if(!u||u.role==='owner'||!['admin','artist','user'].includes(el.value)) return;
+  u.role=el.value; persist(); render();
+}
+function renameUser(id){
+  if(!isOwner()) return;
+  const u=db.users.find(x=>x.id===id); if(!u) return;
+  const n=prompt(t('name'),u.name)?.trim(); if(!n) return;
+  u.name=n.slice(0,40); persist(); render();
+}
+async function resetPass(id){
+  if(!isOwner()) return;
+  const u=db.users.find(x=>x.id===id); if(!u) return;
+  const p=prompt(t('newPass')); if(!p) return;
+  if(p.length<8) return toast(t('minPass'));
+  u.salt=uid()+uid(); u.hash=await hashPass(p,u.salt);
+  persist(); toast(t('saved'));
+}
+function delUser(id){
+  if(!isOwner()) return;
+  const u=db.users.find(x=>x.id===id); if(!u) return;
+  if(u.role==='owner') return toast(t('ownerLocked'));
+  if(!confirm(t('sure'))) return;
+  db.users=db.users.filter(x=>x.id!==id);
+  if(session===id) logout(); else { persist(); render(); }
+}
+function toggleSection(el){
+  if(!isOwner()) return;
+  const s=el.dataset.name; db.hidden[s]=!db.hidden[s];
+  persist(); render();
+}
+function toggleLang(){ prefs.lang=prefs.lang==='fa'?'en':'fa'; persist(); render(); }
+function toggleTheme(){ prefs.theme=prefs.theme==='dark'?'light':'dark'; persist(); render(); }
+
+const A={
+  go:el=>{ view=el.dataset.view; viewArtist=null; render(); window.scrollTo(0,0); },
+  openArtist:el=>{ viewArtist=el.dataset.name; view='artist'; render(); window.scrollTo(0,0); },
+  play:el=>playFromId(el.dataset.id),
+  playAll:el=>playList(approved().filter(x=>x.artist===el.dataset.name).map(x=>x.id)),
+  playPl:el=>{ const pl=me()?.playlists.find(p=>p.id===el.dataset.id); if(pl) playList(pl.tracks.filter(id=>byId(id)?.status==='approved')); },
+  pp:togglePlay, next, prev, shuffle:toggleShuffle, repeat:toggleRepeat,
+  setup:doSetup, login:doLogin, register:doRegister, loginModal, registerModal, logout, closeModal,
+  approve:el=>setStatus(el.dataset.id,'approved'),
+  reject:el=>setStatus(el.dataset.id,'rejected'),
+  editTrack:el=>editTrackModal(el.dataset.id),
+  saveTrack:el=>doSaveTrack(el.dataset.id),
+  delTrack:el=>delTrack(el.dataset.id),
+  editArtist:el=>editArtistModal(el.dataset.name),
+  saveArtist:el=>doSaveArtist(el.dataset.name),
+  addArtist, toggleVerify:el=>toggleVerify(el.dataset.name),
+  submitUpload, newPlaylist, delPlaylist:el=>delPlaylist(el.dataset.id), removeFromPl,
+  addSuggested, delSuggested:el=>delSuggested(el.dataset.id),
+  sendTicket, reply:el=>replyTicket(el.dataset.id),
+  renameUser:el=>renameUser(el.dataset.id), resetPass:el=>resetPass(el.dataset.id), delUser:el=>delUser(el.dataset.id),
+  toggleSection, toggleLang, toggleTheme,
+  addToPl, suggestAdd, changeRole
+};
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');
+  if(!el||el.tagName==='SELECT'||el.tagName==='INPUT') return;
+  const fn=A[el.dataset.act]; if(fn) fn(el);
+});
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.tagName!=='SELECT'||!el.dataset.act) return;
+  const fn=A[el.dataset.act]; if(fn) fn(el);
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.id==='q'){ q=el.value; renderResults(); }
+  else if(el.id==='seek'){ if(audio.duration) audio.currentTime=audio.duration*el.value/100; }
+  else if(el.id==='vol'){ audio.volume=+el.value; }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeModal();
+  if(e.key==='Enter'&&e.target.tagName==='INPUT') e.target.closest('[data-scope]')?.querySelector('[data-primary]')?.click();
+});
+$('#modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
+
+render();
+</script>
+</body>
+</html>
